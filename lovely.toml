@@ -1,0 +1,97 @@
+[manifest]
+version = "1.0.0"
+priority = 15
+
+[vars]
+
+[[patches]]
+[patches.pattern]
+target = "game.lua"
+pattern = "STOP_USE = 0,"
+position = "after"
+payload = '''
+select_more = 0,
+cardarea = nil,
+'''
+match_indent = true
+
+#death cannot be allowed to select 3 cards.
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = 'self.ability.consumeable.mod_num = math.min(5, self.ability.consumeable.max_highlighted)'
+position = 'at'
+payload = '''
+if self.ability.name == "Death" then
+	self.ability.consumeable.mod_num = math.min(5, self.ability.consumeable.max_highlighted)
+else
+	self.ability.consumeable.mod_num = math.min(5, self.ability.consumeable.max_highlighted + G.GAME.select_more)
+end
+'''
+match_indent = true
+
+[[patches]]
+[patches.regex]
+target = 'functions/common_events.lua'
+pattern = '\{cfg\.max_highlighted,'
+position = 'at'
+payload = '{cfg.max_highlighted + G.GAME.select_more,'
+
+[[patches]]
+[patches.pattern]
+target = 'functions/common_events.lua'
+pattern = '''
+elseif _c.name == "Strength" then loc_vars = {cfg.max_highlighted}
+elseif _c.name == "The Hanged Man" then loc_vars = {cfg.max_highlighted}
+'''
+position = 'at'
+payload = '''
+elseif _c.name == "Strength" then loc_vars = {cfg.max_highlighted + G.GAME.select_more}
+elseif _c.name == "The Hanged Man" then loc_vars = {cfg.max_highlighted + G.GAME.select_more}
+'''
+match_indent = false
+
+
+# thanks to @nightshademagia for this patch
+# it disallows rerolling blinds that have been prescribed
+[[patches]]
+[patches.pattern]
+target = 'functions/common_events.lua'
+pattern = 'G.GAME.perscribed_bosses[G.GAME.round_resets.ante] = nil'
+position = 'at'
+payload = ''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = 'functions/state_events.lua'
+pattern = '''
+local splashed = SMODS.always_scores(G.play.cards[i]) or next(find_joker('Splash'))
+'''
+position = 'at'
+payload = '''
+local splashed = SMODS.always_scores(G.play.cards[i]) or next(find_joker('Splash')) or G.play.cards[i].seal == "TWT_nb"
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = 'game.lua'
+pattern = 'replace_card.states.visible = false'
+position = 'before'
+payload = '''
+if problematic and problematic.config_file.orange_man then
+	replace_card:set_ability(G.P_CENTERS["m_TWT_orange"])
+end
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = 'if not initial then G.GAME.blind:debuff_card(self) end'
+position = 'before'
+payload = '''
+initial = true
+'''
+match_indent = true

@@ -1,0 +1,1 @@
+return {["orange_man"]=false,["phobia"]=1,}
