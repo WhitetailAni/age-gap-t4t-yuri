@@ -1,2 +1,8 @@
-# age-gap-t4t-yuri
-A mod created with love and care
+# age gap t4t yuri
+the balatro mod created by lana and zoe. if you don't know who those people are, then you won't really understand this mod.
+
+it's not finished. it's not going to be finished, either. everything is going to remain exactly as it is - no bugfixes, no placeholder texture replacements, nothing.
+
+originally this was going to live only in our laptop but, we changed our minds.
+
+have fun
